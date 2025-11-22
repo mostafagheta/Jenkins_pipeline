@@ -4,7 +4,7 @@ pipeline {
     tools {
         maven 'maven'
         jdk 'jdk11'
-        dependencyCheck 'dp'
+        dependency-check 'dp'
     }
 
     stages {
@@ -36,10 +36,7 @@ pipeline {
             steps {
                 dependencyCheck(
                     odcInstallation: 'dp',
-                    scan: '.',
-                    formats: ['HTML', 'XML'],
-                    out: 'dependency-check-report',
-                    project: 'Jenkins-pipeline'
+                    additionalArguments: '--project Jenkins-pipeline --scan . --format XML --format HTML --out dependency-check-report'
                 )
             }
             post {
