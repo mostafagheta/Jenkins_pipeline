@@ -4,6 +4,7 @@ pipeline {
     tools {
         maven 'maven'
         jdk 'jdk11'
+        dependencyCheck 'dp'
     }
 
     stages {
@@ -33,14 +34,13 @@ pipeline {
 
         stage('OWASP Dependency Check') {
             steps {
-                sh '''
-                    dp \
-                      --project "Jenkins-pipeline" \
-                      --scan . \
-                      --format "XML" \
-                      --format "HTML" \
-                      --out dependency-check-report
-                '''
+                dependencyCheck(
+                    odcInstallation: 'dp',
+                    scan: '.',
+                    formats: ['HTML', 'XML'],
+                    out: 'dependency-check-report',
+                    project: 'Jenkins-pipeline'
+                )
             }
             post {
                 always {
