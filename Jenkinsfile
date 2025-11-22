@@ -4,7 +4,6 @@ pipeline {
     tools {
         maven 'maven'
         jdk 'jdk11'
-        dependency-check 'dp'
     }
 
     stages {
