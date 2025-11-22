@@ -33,6 +33,7 @@ pipeline {
 
         stage('OWASP Dependency Check') {
             steps {
+                sh 'mkdir -p dependency-check-report'
                 dependencyCheck(
                     odcInstallation: 'dp',
                     additionalArguments: '--project Jenkins-pipeline --scan . --format XML --format HTML --out dependency-check-report'
