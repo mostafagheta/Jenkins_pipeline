@@ -4,7 +4,6 @@ pipeline {
     tools {
         maven 'maven'
         jdk 'jdk11'
-        sonarScanner 'sonarqube'
     }
     environment {
         DOCKER_IMAGE = 'mostafagheta/shopping-app:latest'
