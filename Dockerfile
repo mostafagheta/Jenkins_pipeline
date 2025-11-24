@@ -1,6 +1,7 @@
 # Multi-stage Dockerfile
 # Builder: use Maven with JDK 11 to compile and package the application
-FROM maven:3.8.8-jdk-11 AS builder
+# Use a Maven image that includes OpenJDK 11 (slim variant is commonly available on Docker Hub)
+FROM maven:3.8.8-openjdk-11-slim AS builder
 WORKDIR /build
 
 # Copy only pom first to leverage Docker layer caching for dependencies
