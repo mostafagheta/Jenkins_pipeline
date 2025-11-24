@@ -77,7 +77,7 @@ pipeline {
             }
             steps {
                 script {
-                    withSonarQubeEnv('jenkins') {   // Jenkins Sonar server name
+                    withSonarQubeEnv('sonarqube') {   // Jenkins Sonar server name
                         sh """
                             ${tool 'sonarqube'}/bin/sonar-scanner \
                             -Dsonar.projectKey=Shopping-App \
