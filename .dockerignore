@@ -1,0 +1,14 @@
+# Ignore build output and local IDE files
+target/
+.m2/
+.git
+.gitignore
+.idea
+*.iml
+*.log
+
+# OS files
+*.swp
+._*
+Thumbs.db
+**/target

@@ -5,7 +5,9 @@ pipeline {
         maven 'maven'
         jdk 'jdk11'
     }
-
+    environment {
+        DOCKER_IMAGE = 'mostafagheta/shopping-app:latest'
+    }
     stages {
 
         stage('Checkout') {
@@ -67,6 +69,58 @@ pipeline {
                     alwaysLinkToLastBuild: true,
                     allowMissing: false
                 ])
+            }
+        }
+        stage('SonarQube Analysis') {
+            environment {
+                SONARQUBE_TOKEN = credentials('sonarqube')
+            }
+            steps {
+                script {
+                    withSonarQubeEnv('jenkins') {   // Jenkins Sonar server name
+                        sh """
+                            ${tool 'sonarqube'}/bin/sonar-scanner \
+                            -Dsonar.projectKey=Shopping-App \
+                            -Dsonar.projectName=Shopping-App \
+                            -Dsonar.sources=src \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.host.url=http://localhost:9000 \
+                            -Dsonar.login=${SONARQUBE_TOKEN}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 2, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
+
+        
+         stage('Build Docker Image') {
+            steps {
+                echo "Building Docker image ${DOCKER_IMAGE}"
+                sh "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Scan Docker Image with Trivy') {
+            steps {
+                echo "Scanning Docker image ${DOCKER_IMAGE} with Trivy"
+                sh "trivy image --format table --exit-code 1 --severity HIGH,CRITICAL ${DOCKER_IMAGE}"
+                sh "trivy image --format json -o trivy-report.json ${DOCKER_IMAGE}"
+                sh "trivy image --format template -o trivy-report.html --template '@contrib/html.tpl' ${DOCKER_IMAGE}"
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'trivy-report.*', fingerprint: true
+                }
             }
         }
     }
